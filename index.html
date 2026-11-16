@@ -9,6 +9,41 @@
 <meta property="og:description" content="Боты для записи, магазины в Telegram, антиспам для групп, мониторинг цен. Открытый код, тесты, фиксированные цены.">
 <meta property="og:image" content="https://northlanedev.github.io/assets/cover-leads-bot.png">
 <meta name="theme-color" content="#EEF2F6">
+<link rel="alternate" hreflang="ru" href="https://northlanedev.github.io/?lang=ru">
+<link rel="alternate" hreflang="en" href="https://northlanedev.github.io/?lang=en">
+<link rel="alternate" hreflang="uk" href="https://northlanedev.github.io/?lang=uk">
+<link rel="alternate" hreflang="kk" href="https://northlanedev.github.io/?lang=kk">
+<link rel="alternate" hreflang="es" href="https://northlanedev.github.io/?lang=es">
+<link rel="alternate" hreflang="pt" href="https://northlanedev.github.io/?lang=pt">
+<link rel="alternate" hreflang="de" href="https://northlanedev.github.io/?lang=de">
+<link rel="alternate" hreflang="fr" href="https://northlanedev.github.io/?lang=fr">
+<link rel="alternate" hreflang="tr" href="https://northlanedev.github.io/?lang=tr">
+<link rel="alternate" hreflang="zh" href="https://northlanedev.github.io/?lang=zh">
+<link rel="alternate" hreflang="x-default" href="https://northlanedev.github.io/">
+<script>
+/* pick the page language before first paint: ?lang= > saved choice > browser languages */
+(function () {
+  var S = ["ru","en","uk","kk","es","pt","de","fr","tr","zh"], CIS = ["be","ky","tg","uz","az","hy","ka","tk","mn"];
+  var q = null, saved = null, l = null, det = null;
+  try { q = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+  try { saved = localStorage.getItem("lang"); } catch (e) {}
+  if (q && S.indexOf(q) > -1) l = q;
+  else if (saved && S.indexOf(saved) > -1) l = saved;
+  else {
+    var ls = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || "en"];
+    for (var i = 0; i < ls.length && !l; i++) {
+      var full = (ls[i] || "").toLowerCase(), p = full.split("-")[0];
+      if (p === "zh" && /^zh-(tw|hk|mo|hant)/.test(full)) { if (!det) det = "zh-TW"; continue; }
+      if (S.indexOf(p) > -1) l = p; else if (!det) det = p;
+    }
+    if (!l) l = CIS.indexOf(det) > -1 ? "ru" : "en";
+  }
+  window.__LANG = l; window.__LANG_DETECTED = det;
+  var h = document.documentElement;
+  h.lang = l === "zh" ? "zh-CN" : l;
+  if (l !== "ru") { h.className += " i18n-wait"; setTimeout(function () { h.classList.remove("i18n-wait"); }, 2500); }
+})();
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 26'%3E%3Cpath d='M0 26 11 0l11 26-11-6z' fill='%231F8FE5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,6 +101,23 @@ nav a:hover { color: var(--ink); }
 .btn:hover { background: var(--signal-ink); transform: translateY(-1px); }
 .btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
 .btn.ghost:hover { background: var(--ink); color: #fff; }
+
+
+/* language switcher + translate bar */
+html.i18n-wait body { visibility: hidden; }
+.lang { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--grid); color: var(--ink); font: 600 14px/1 var(--text); cursor: pointer; transition: box-shadow .2s; }
+.lang:hover, .lang:focus-within { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.lang:focus-within { outline: 3px solid var(--signal); outline-offset: 2px; }
+.lang .globe { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.lang select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+nav + .lang { margin-left: 4px; }
+.btn .s { display: none; }
+.trbar { background: var(--ink); color: #fff; font-size: 15px; }
+.trbar .wrap { display: flex; align-items: center; gap: 14px; min-height: 52px; padding: 8px 0; flex-wrap: wrap; }
+.trbar .btn { background: var(--signal); padding: 9px 16px; font-size: 14px; }
+.trbar .btn:hover { background: #fff; color: var(--ink); }
+.trx { margin-left: auto; background: none; border: 0; color: #B8C6D8; font-size: 24px; line-height: 1; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+.trx:hover { color: #fff; }
 
 /* ---------------- hero ---------------- */
 .hero { padding: 56px 0 0; }
@@ -200,6 +252,7 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
 
 @media (max-width: 960px) {
   nav { display: none; }
+  .lang { margin-left: auto; }
   .hero-top, .case, .proof, .demo, .contact { grid-template-columns: 1fr; }
   .case:nth-child(even) .shot { order: 0; }
   .steps { grid-template-columns: 1fr 1fr; row-gap: 40px; }
@@ -207,7 +260,11 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
   section { padding: 80px 0; }
 }
 @media (max-width: 560px) {
+  header .wrap { gap: 10px; }
   header .btn { padding: 11px 16px; }
+  header .btn .l { display: none; } header .btn .s { display: inline; }
+  .brand { font-size: 15px; }
+  .lang { padding: 0 10px; height: 38px; }
   .steps { grid-template-columns: 1fr; }
   .case dl { grid-template-columns: 1fr; gap: 2px 0; }
   .case dd { margin-bottom: 10px; }
@@ -222,41 +279,54 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
 </head>
 <body>
 
+<div class="trbar" id="trBar" hidden>
+  <div class="wrap">
+    <span id="trQ"></span>
+    <a class="btn" id="trGo" href="#"></a>
+    <button type="button" class="trx" id="trX" aria-label="Close">×</button>
+  </div>
+</div>
+
 <header id="hdr">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="Northlane Dev, наверх">
+    <a class="brand" href="#top" data-ia="aria-label:brandAria" aria-label="Northlane Dev, наверх">
       <svg viewBox="0 0 22 26" aria-hidden="true"><path d="M0 26 11 0l11 26-11-6z" fill="#1F8FE5"/></svg>
       Northlane Dev
     </a>
-    <nav aria-label="Разделы">
-      <a href="#work">Проекты</a>
-      <a href="#proof">Как проверяем</a>
-      <a href="#prices">Цены</a>
-      <a href="#process">Как работаем</a>
+    <nav data-ia="aria-label:navAria" aria-label="Разделы">
+      <a href="#work" data-i="nav1">Проекты</a>
+      <a href="#proof" data-i="nav2">Как проверяем</a>
+      <a href="#prices" data-i="nav3">Цены</a>
+      <a href="#process" data-i="nav4">Как работаем</a>
     </nav>
-    <a class="btn" data-contact href="#contact">Обсудить задачу</a>
+    <label class="lang">
+      <svg class="globe" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.25"/><path d="M1.75 10h16.5M10 1.75c2.4 2.3 3.6 5.05 3.6 8.25s-1.2 5.95-3.6 8.25c-2.4-2.3-3.6-5.05-3.6-8.25S7.6 4.05 10 1.75z"/></svg>
+      <span id="langCode">RU</span>
+      <select id="langSel" data-ia="aria-label:langLabel" aria-label="Язык сайта"></select>
+    </label>
+    <a class="btn" data-contact href="#contact"><span class="l" data-i="cta">Обсудить задачу</span><span class="s" data-i="ctaShort">Написать</span></a>
   </div>
 </header>
 
 <main id="top">
   <div class="hero">
     <div class="wrap hero-top">
-      <h1 aria-label="Telegram-боты и парсеры, которые работают за вас">
-        <span class="line" aria-hidden="true"><span>Telegram-боты</span></span>
-        <span class="line" aria-hidden="true"><span>и парсеры, которые</span></span>
-        <span class="line" aria-hidden="true"><span>работают за вас</span></span>
+      <h1 id="h1" aria-label="Telegram-боты и парсеры, которые работают за вас">
+        <span class="line" aria-hidden="true"><span data-i="h1a">Telegram-боты</span></span>
+        <span class="line" aria-hidden="true"><span data-i="h1b">и парсеры, которые</span></span>
+        <span class="line" aria-hidden="true"><span data-i="h1c">работают за вас</span></span>
       </h1>
       <div class="hero-side">
-        <p>Принимают заявки, продают, следят за ценами и чистят чат от спама, пока вы занимаетесь делом. Небольшие задачи — за 1–3 дня по фиксированной цене.</p>
+        <p data-i="heroP">Принимают заявки, продают, следят за ценами и чистят чат от спама, пока вы занимаетесь делом. Небольшие задачи — за 1–3 дня по фиксированной цене.</p>
         <div class="actions">
-          <a class="btn" href="#work">Смотреть проекты</a>
-          <a class="btn ghost" href="#demo">Задать вопрос боту</a>
+          <a class="btn" href="#work" data-i="heroBtn1">Смотреть проекты</a>
+          <a class="btn ghost" href="#demo" data-i="heroBtn2">Задать вопрос боту</a>
         </div>
       </div>
     </div>
 
     <div class="wrap">
-      <figure class="schematic" id="schematic" aria-label="Схема: сообщения клиентов попадают в бота, а он превращает их в заявки, таблицы и уведомления менеджеру">
+      <figure class="schematic" id="schematic" data-ia="aria-label:schemAria" aria-label="Схема: сообщения клиентов попадают в бота, а он превращает их в заявки, таблицы и уведомления менеджеру">
         <svg id="flow" viewBox="0 0 1180 300" role="img" aria-hidden="true"></svg>
       </figure>
     </div>
@@ -264,73 +334,73 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
 
   <section id="work">
     <div class="wrap">
-      <p class="kicker">Проекты с открытым кодом</p>
-      <h2>Пять готовых решений, которые адаптируются под ваш бизнес</h2>
-      <p class="lead">Это демо-проекты: код открыт, у каждого есть тесты и инструкция. Под конкретную задачу любой из них дорабатывается за пару дней, а это быстрее и дешевле разработки с нуля.</p>
+      <p class="kicker" data-i="workKicker">Проекты с открытым кодом</p>
+      <h2 data-i="workH2">Пять готовых решений, которые адаптируются под ваш бизнес</h2>
+      <p class="lead" data-i="workLead">Это демо-проекты: код открыт, у каждого есть тесты и инструкция. Под конкретную задачу любой из них дорабатывается за пару дней, а это быстрее и дешевле разработки с нуля.</p>
 
       <div class="cases">
         <article class="case" id="leads-bot">
-          <div class="shot"><img src="assets/cover-leads-bot.png" alt="Бот заявок и записи: клиент выбирает услугу и время, менеджер получает заявку" width="1200" height="675" loading="lazy"></div>
+          <div class="shot"><img src="assets/cover-leads-bot.png" data-ia="alt:c1a" alt="Бот заявок и записи: клиент выбирает услугу и время, менеджер получает заявку" width="1200" height="675" loading="lazy"></div>
           <div>
-            <h3>Бот заявок и записи</h3>
+            <h3 data-i="c1h">Бот заявок и записи</h3>
             <dl>
-              <dt>Задача</dt><dd>Клиенты пишут в разное время, заявки теряются в переписке, а запись ведётся вручную.</dd>
-              <dt>Решение</dt><dd>Бот проводит клиента по анкете, понимает «завтра 15:30» и не даёт занять уже занятое время.</dd>
-              <dt>Результат</dt><dd>Менеджер сразу получает карточку заявки со статусами и выгрузку в Excel.</dd>
+              <dt data-i="lTask">Задача</dt><dd data-i="c1t">Клиенты пишут в разное время, заявки теряются в переписке, а запись ведётся вручную.</dd>
+              <dt data-i="lSol">Решение</dt><dd data-i="c1s">Бот проводит клиента по анкете, понимает «завтра 15:30» и не даёт занять уже занятое время.</dd>
+              <dt data-i="lRes">Результат</dt><dd data-i="c1r">Менеджер сразу получает карточку заявки со статусами и выгрузку в Excel.</dd>
             </dl>
-            <div class="meta"><span>Python, aiogram 3, SQLite, 31 тест</span><a data-repo="leads-bot" href="#">Код на GitHub</a></div>
+            <div class="meta"><span data-i="c1m">Python, aiogram 3, SQLite, 31 тест</span><a data-repo="leads-bot" href="#" data-i="code">Код на GitHub</a></div>
           </div>
         </article>
 
         <article class="case" id="shop-bot">
-          <div class="shot"><img src="assets/cover-shop-bot.png" alt="Магазин в Telegram: корзина и подтверждённый заказ" width="1200" height="675" loading="lazy"></div>
+          <div class="shot"><img src="assets/cover-shop-bot.png" data-ia="alt:c2a" alt="Магазин в Telegram: корзина и подтверждённый заказ" width="1200" height="675" loading="lazy"></div>
           <div>
-            <h3>Магазин в Telegram</h3>
+            <h3 data-i="c2h">Магазин в Telegram</h3>
             <dl>
-              <dt>Задача</dt><dd>Заказы приходят в личку вперемешку, а маркетплейсы забирают комиссию.</dd>
-              <dt>Решение</dt><dd>Каталог, корзина, самовывоз или доставка с порогом бесплатной доставки, статусы для покупателя.</dd>
-              <dt>Результат</dt><dd>Заказы приходят владельцу готовыми, с кнопками статусов и подсчётом выручки.</dd>
+              <dt data-i="lTask">Задача</dt><dd data-i="c2t">Заказы приходят в личку вперемешку, а маркетплейсы забирают комиссию.</dd>
+              <dt data-i="lSol">Решение</dt><dd data-i="c2s">Каталог, корзина, самовывоз или доставка с порогом бесплатной доставки, статусы для покупателя.</dd>
+              <dt data-i="lRes">Результат</dt><dd data-i="c2r">Заказы приходят владельцу готовыми, с кнопками статусов и подсчётом выручки.</dd>
             </dl>
-            <div class="meta"><span>Python, aiogram 3, SQLite, 13 тестов</span><a data-repo="shop-bot" href="#">Код на GitHub</a></div>
+            <div class="meta"><span data-i="c2m">Python, aiogram 3, SQLite, 13 тестов</span><a data-repo="shop-bot" href="#" data-i="code">Код на GitHub</a></div>
           </div>
         </article>
 
         <article class="case" id="chat-guard-bot">
-          <div class="shot"><img src="assets/cover-chat-guard-bot.png" alt="Антиспам-бот: капча для нового участника и мьют спамера" width="1200" height="675" loading="lazy"></div>
+          <div class="shot"><img src="assets/cover-chat-guard-bot.png" data-ia="alt:c3a" alt="Антиспам-бот: капча для нового участника и мьют спамера" width="1200" height="675" loading="lazy"></div>
           <div>
-            <h3>Антиспам для групп</h3>
+            <h3 data-i="c3h">Антиспам для групп</h3>
             <dl>
-              <dt>Задача</dt><dd>Спам-боты заходят в чат и рассылают рекламу быстрее, чем админы успевают удалять.</dd>
-              <dt>Решение</dt><dd>Капча новичкам, мьют за флуд, удаление ссылок от новых участников, предупреждения.</dd>
-              <dt>Результат</dt><dd>Чат чистый, а у админов остаются команды <code>/mute 30m</code>, <code>/warn</code>, <code>/ban</code>.</dd>
+              <dt data-i="lTask">Задача</dt><dd data-i="c3t">Спам-боты заходят в чат и рассылают рекламу быстрее, чем админы успевают удалять.</dd>
+              <dt data-i="lSol">Решение</dt><dd data-i="c3s">Капча новичкам, мьют за флуд, удаление ссылок от новых участников, предупреждения.</dd>
+              <dt data-i="lRes">Результат</dt><dd data-i="c3r">Чат чистый, а у админов остаются команды <code>/mute 30m</code>, <code>/warn</code>, <code>/ban</code>.</dd>
             </dl>
-            <div class="meta"><span>Python, aiogram 3, 23 теста</span><a data-repo="chat-guard-bot" href="#">Код на GitHub</a></div>
+            <div class="meta"><span data-i="c3m">Python, aiogram 3, 23 теста</span><a data-repo="chat-guard-bot" href="#" data-i="code">Код на GitHub</a></div>
           </div>
         </article>
 
         <article class="case" id="price-monitor">
-          <div class="shot"><img src="assets/cover-price-monitor.png" alt="Мониторинг цен: отчёт о подешевевших и подорожавших товарах" width="1200" height="675" loading="lazy"></div>
+          <div class="shot"><img src="assets/cover-price-monitor.png" data-ia="alt:c4a" alt="Мониторинг цен: отчёт о подешевевших и подорожавших товарах" width="1200" height="675" loading="lazy"></div>
           <div>
-            <h3>Мониторинг цен</h3>
+            <h3 data-i="c4h">Мониторинг цен</h3>
             <dl>
-              <dt>Задача</dt><dd>Цены конкурентов меняются каждый день, а сверять их вручную долго.</dd>
-              <dt>Решение</dt><dd>Парсер обходит каталог, хранит историю цен и находит изменения.</dd>
-              <dt>Результат</dt><dd>Утром в Telegram приходит отчёт «подешевело / подорожало», плюс таблица Excel.</dd>
+              <dt data-i="lTask">Задача</dt><dd data-i="c4t">Цены конкурентов меняются каждый день, а сверять их вручную долго.</dd>
+              <dt data-i="lSol">Решение</dt><dd data-i="c4s">Парсер обходит каталог, хранит историю цен и находит изменения.</dd>
+              <dt data-i="lRes">Результат</dt><dd data-i="c4r">Утром в Telegram приходит отчёт «подешевело / подорожало», плюс таблица Excel.</dd>
             </dl>
-            <div class="meta"><span>Python, BeautifulSoup, openpyxl, 15 тестов</span><a data-repo="price-monitor" href="#">Код на GitHub</a></div>
+            <div class="meta"><span data-i="c4m">Python, BeautifulSoup, openpyxl, 15 тестов</span><a data-repo="price-monitor" href="#" data-i="code">Код на GitHub</a></div>
           </div>
         </article>
 
         <article class="case" id="crypto-alert-bot">
-          <div class="shot"><img src="assets/cover-crypto-alert-bot.png" alt="Бот крипто-алертов: команды /alert и /price" width="1200" height="675" loading="lazy"></div>
+          <div class="shot"><img src="assets/cover-crypto-alert-bot.png" data-ia="alt:c5a" alt="Бот крипто-алертов: команды /alert и /price" width="1200" height="675" loading="lazy"></div>
           <div>
-            <h3>Крипто-алерты</h3>
+            <h3 data-i="c5h">Крипто-алерты</h3>
             <dl>
-              <dt>Задача</dt><dd>Нужно знать, когда монета пересекает уровень, не сидя весь день в терминале.</dd>
-              <dt>Решение</dt><dd>Команда <code>/alert btc &gt; 70000</code>, разовые и повторяющиеся алерты, работа в группах.</dd>
-              <dt>Результат</dt><dd>Уведомление приходит вовремя, а все цены берутся одним запросом с кэшем, без упора в лимиты API.</dd>
+              <dt data-i="lTask">Задача</dt><dd data-i="c5t">Нужно знать, когда монета пересекает уровень, не сидя весь день в терминале.</dd>
+              <dt data-i="lSol">Решение</dt><dd data-i="c5s">Команда <code>/alert btc &gt; 70000</code>, разовые и повторяющиеся алерты, работа в группах.</dd>
+              <dt data-i="lRes">Результат</dt><dd data-i="c5r">Уведомление приходит вовремя, а все цены берутся одним запросом с кэшем, без упора в лимиты API.</dd>
             </dl>
-            <div class="meta"><span>Python, aiogram 3, CoinGecko API, 19 тестов</span><a data-repo="crypto-alert-bot" href="#">Код на GitHub</a></div>
+            <div class="meta"><span data-i="c5m">Python, aiogram 3, CoinGecko API, 19 тестов</span><a data-repo="crypto-alert-bot" href="#" data-i="code">Код на GitHub</a></div>
           </div>
         </article>
       </div>
@@ -340,16 +410,16 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
   <section id="proof" class="sheet">
     <div class="wrap proof">
       <div>
-        <p class="kicker">Как проверяем</p>
-        <h2>Логика покрыта тестами, поэтому правки не ломают старое</h2>
-        <p class="lead" style="margin-bottom:36px">Логику бота мы отделяем от Telegram и проверяем автоматически. Когда вы просите доработку, тесты сразу показывают, что всё остальное работает как раньше.</p>
+        <p class="kicker" data-i="proofKicker">Как проверяем</p>
+        <h2 data-i="proofH2">Логика покрыта тестами, поэтому правки не ломают старое</h2>
+        <p class="lead" style="margin-bottom:36px" data-i="proofLead">Логику бота мы отделяем от Telegram и проверяем автоматически. Когда вы просите доработку, тесты сразу показывают, что всё остальное работает как раньше.</p>
         <ul class="facts">
-          <li><b>101</b><span>автотест в пяти проектах портфолио</span></li>
-          <li><b>3 000</b><span>строк кода на Python в открытом доступе</span></li>
-          <li><b>2</b><span>правки входят в цену любого заказа</span></li>
+          <li><b data-i="f1n">101</b><span data-i="f1">автотест в пяти проектах портфолио</span></li>
+          <li><b data-i="f2n">3 000</b><span data-i="f2">строк кода на Python в открытом доступе</span></li>
+          <li><b data-i="f3n">2</b><span data-i="f3">правки входят в цену любого заказа</span></li>
         </ul>
       </div>
-      <div class="term" id="term" role="img" aria-label="Терминал: тесты всех пяти проектов проходят, 101 тест">
+      <div class="term" id="term" role="img" data-ia="aria-label:termAria" aria-label="Терминал: тесты всех пяти проектов проходят, 101 тест">
         <div class="bar"><i></i><i></i><i></i></div>
         <div id="termOut"></div>
       </div>
@@ -359,14 +429,14 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
   <section id="demo">
     <div class="wrap demo">
       <div>
-        <p class="kicker">Попробуйте сами</p>
-        <h2>Спросите, и бот подскажет похожий проект</h2>
-        <p class="lead" style="margin-bottom:0">Так выглядит переписка с ботом в Telegram: быстрые кнопки, понятные ответы, ссылки по делу. Нажмите на вопрос.</p>
+        <p class="kicker" data-i="demoKicker">Попробуйте сами</p>
+        <h2 data-i="demoH2">Спросите, и бот подскажет похожий проект</h2>
+        <p class="lead" style="margin-bottom:0" data-i="demoLead">Так выглядит переписка с ботом в Telegram: быстрые кнопки, понятные ответы, ссылки по делу. Нажмите на вопрос.</p>
       </div>
-      <div class="chat" aria-label="Демо-переписка">
+      <div class="chat" data-ia="aria-label:chatAria" aria-label="Демо-переписка">
         <div class="chat-head">
           <div class="avatar"><svg viewBox="0 0 22 26" aria-hidden="true"><path d="M0 26 11 0l11 26-11-6z" fill="#40C4FF"/></svg></div>
-          <div><b>Northlane Dev</b><small>бот студии</small></div>
+          <div><b>Northlane Dev</b><small data-i="botSub">бот студии</small></div>
         </div>
         <div class="log" id="log" aria-live="polite"></div>
         <div class="replies" id="replies"></div>
@@ -376,33 +446,33 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
 
   <section id="prices" class="sheet">
     <div class="wrap">
-      <p class="kicker">Цены</p>
-      <h2>Фиксированная цена до начала работы</h2>
-      <p class="lead">Если задача больше, разобьём её на этапы и назовём цену каждого. Сумма по ходу работы не растёт.</p>
+      <p class="kicker" data-i="prKicker">Цены</p>
+      <h2 data-i="prH2">Фиксированная цена до начала работы</h2>
+      <p class="lead" data-i="prLead">Если задача больше, разобьём её на этапы и назовём цену каждого. Сумма по ходу работы не растёт.</p>
       <table class="prices">
-        <thead><tr><th>Задача</th><th>Цена</th><th>Срок</th></tr></thead>
+        <thead><tr><th data-i="thTask">Задача</th><th data-i="thPrice">Цена</th><th data-i="thTime">Срок</th></tr></thead>
         <tbody>
-          <tr><td>Telegram-бот: команды, кнопки, одна интеграция<small>например, анкета с отправкой заявки вам в Telegram</small></td><td class="price">от $35</td><td class="time">1–2 дня</td></tr>
-          <tr><td>Бот с базой данных и админкой<small>запись, магазин, статусы, выгрузка в Excel</small></td><td class="price">от $60</td><td class="time">2–3 дня</td></tr>
-          <tr><td>Бот-модератор для группы<small>капча, антиспам, команды для админов</small></td><td class="price">от $40</td><td class="time">1–2 дня</td></tr>
-          <tr><td>Парсер с выгрузкой в Excel или Google Таблицы<small>расписание и уведомления — дополнительно</small></td><td class="price">от $25</td><td class="time">1–2 дня</td></tr>
-          <tr><td>Исправить или доработать вашего бота<small>разберёмся в чужом коде и опишем, что поменяли</small></td><td class="price">от $20</td><td class="time">от 1 дня</td></tr>
+          <tr><td><span data-i="r1">Telegram-бот: команды, кнопки, одна интеграция</span><small data-i="r1s">например, анкета с отправкой заявки вам в Telegram</small></td><td class="price" data-i="r1p">от $35</td><td class="time" data-i="r1t">1–2 дня</td></tr>
+          <tr><td><span data-i="r2">Бот с базой данных и админкой</span><small data-i="r2s">запись, магазин, статусы, выгрузка в Excel</small></td><td class="price" data-i="r2p">от $60</td><td class="time" data-i="r2t">2–3 дня</td></tr>
+          <tr><td><span data-i="r3">Бот-модератор для группы</span><small data-i="r3s">капча, антиспам, команды для админов</small></td><td class="price" data-i="r3p">от $40</td><td class="time" data-i="r3t">1–2 дня</td></tr>
+          <tr><td><span data-i="r4">Парсер с выгрузкой в Excel или Google Таблицы</span><small data-i="r4s">расписание и уведомления — дополнительно</small></td><td class="price" data-i="r4p">от $25</td><td class="time" data-i="r4t">1–2 дня</td></tr>
+          <tr><td><span data-i="r5">Исправить или доработать вашего бота</span><small data-i="r5s">разберёмся в чужом коде и опишем, что поменяли</small></td><td class="price" data-i="r5p">от $20</td><td class="time" data-i="r5t">от 1 дня</td></tr>
         </tbody>
       </table>
-      <p class="note">Оплата переводом на карту или в USDT. Новым заказчикам — предоплата 50%, остальное после проверки результата. Две правки входят в цену.</p>
+      <p class="note" data-i="note">Оплата переводом на карту или в USDT. Новым заказчикам — предоплата 50%, остальное после проверки результата. Две правки входят в цену.</p>
     </div>
   </section>
 
   <section id="process">
     <div class="wrap">
-      <p class="kicker">Как работаем</p>
-      <h2>От первого сообщения до готового бота — 2–4 дня</h2>
-      <p class="lead">Техническое задание писать не нужно: мы зададим вопросы сами.</p>
+      <p class="kicker" data-i="psKicker">Как работаем</p>
+      <h2 data-i="psH2">От первого сообщения до готового бота — 2–4 дня</h2>
+      <p class="lead" data-i="psLead">Техническое задание писать не нужно: мы зададим вопросы сами.</p>
       <ol class="steps">
-        <li><b>Вы описываете задачу</b><p>Пара предложений в сообщении. Можно голосом.</p></li>
-        <li><b>Мы присылаем план и цену</b><p>Что будет делать бот, сколько стоит, когда будет готово.</p></li>
-        <li><b>Делаем и показываем</b><p>Вы проверяете тестового бота в своём Telegram.</p></li>
-        <li><b>Запускаем</b><p>Ставим на ваш сервер или передаём код с инструкцией.</p></li>
+        <li><b data-i="s1">Вы описываете задачу</b><p data-i="s1p">Пара предложений в сообщении. Можно голосом.</p></li>
+        <li><b data-i="s2">Мы присылаем план и цену</b><p data-i="s2p">Что будет делать бот, сколько стоит, когда будет готово.</p></li>
+        <li><b data-i="s3">Делаем и показываем</b><p data-i="s3p">Вы проверяете тестового бота в своём Telegram.</p></li>
+        <li><b data-i="s4">Запускаем</b><p data-i="s4p">Ставим на ваш сервер или передаём код с инструкцией.</p></li>
       </ol>
     </div>
   </section>
@@ -411,13 +481,13 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
     <div class="wrap">
       <div class="contact">
         <div>
-          <h2>Опишите задачу — ответим с планом и ценой</h2>
-          <p>Если похожий проект уже есть в портфолио, начнём с него, и выйдет быстрее и дешевле.</p>
+          <h2 data-i="ctH2">Опишите задачу — ответим с планом и ценой</h2>
+          <p data-i="ctP">Если похожий проект уже есть в портфолио, начнём с него, и выйдет быстрее и дешевле.</p>
         </div>
         <div class="links">
-          <a class="btn" data-contact href="https://x.com/DefyHuntet">Написать в X</a>
-          <a href="https://laborx.com/freelancers/users/id480116">Заказать через LaborX (с эскроу)</a>
-          <a data-repo="" href="#">Все проекты на GitHub</a>
+          <a class="btn" data-contact href="https://x.com/DefyHuntet" data-i="ctX">Написать в X</a>
+          <a href="https://laborx.com/freelancers/users/id480116" data-i="ctLx">Заказать через LaborX (с эскроу)</a>
+          <a data-repo="" href="#" data-i="ctGh">Все проекты на GitHub</a>
         </div>
       </div>
     </div>
@@ -425,13 +495,70 @@ footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
 </main>
 
 <footer>
-  <div class="wrap">Northlane Dev. Код проектов на этой странице открыт и распространяется по лицензии MIT.</div>
+  <div class="wrap" data-i="footer">Northlane Dev. Код проектов на этой странице открыт и распространяется по лицензии MIT.</div>
 </footer>
 
+<script src="i18n.js"></script>
 <script>
 /* ------------------------------------------------------------ settings */
 const GITHUB_ORG = "northlanedev";
 const CONTACT_URL = "https://x.com/DefyHuntet";
+const SITE_URL = "https://northlanedev.github.io/";
+
+/* ------------------------------------------------------------ i18n */
+const LANG = window.__LANG || "ru";
+const DICT = window.I18N || {};
+const D = Object.assign({}, DICT.ru || {}, DICT.en || {}, DICT[LANG] || {});
+const ON_PROXY = /\.translate\.goog$/.test(location.hostname);
+const gtUrl = code => {
+  const src = (window.I18N_FROM_RU || []).includes(code) ? "ru" : "en";
+  return `https://translate.google.com/translate?sl=${src}&tl=${code}&hl=${code}&u=${encodeURIComponent(SITE_URL + "?lang=" + src)}`;
+};
+try {
+  document.querySelectorAll("[data-i]").forEach(e => { const v = D[e.dataset.i]; if (v != null) e.innerHTML = v; });
+  document.querySelectorAll("[data-ia]").forEach(e => e.dataset.ia.split(";").forEach(pair => {
+    const [attr, key] = pair.split(":"); if (D[key] != null) e.setAttribute(attr, D[key]);
+  }));
+  document.getElementById("h1").setAttribute("aria-label", [D.h1a, D.h1b, D.h1c].join(" "));
+  document.title = D.title;
+  document.querySelector('meta[name="description"]').setAttribute("content", D.desc);
+  document.querySelector('meta[property="og:title"]').setAttribute("content", D.title);
+  document.querySelector('meta[property="og:description"]').setAttribute("content", D.desc);
+
+  /* language menu: our translations first, then everything Google Translate covers */
+  const sel = document.getElementById("langSel");
+  const add = (parent, value, text) => { const o = document.createElement("option"); o.value = value; o.textContent = text; parent.appendChild(o); return o; };
+  const own = document.createElement("optgroup"); own.label = D.gHand; sel.appendChild(own);
+  Object.keys(DICT).forEach(code => add(own, code, DICT[code].name));
+  const gt = document.createElement("optgroup"); gt.label = D.gAuto; sel.appendChild(gt);
+  const GT = window.I18N_GT || {};
+  Object.keys(GT).sort((a, b) => GT[a].localeCompare(GT[b])).forEach(code => add(gt, "gt:" + code, GT[code]));
+  let proxyLang = null;
+  if (ON_PROXY) { try { proxyLang = new URLSearchParams(location.search).get("_x_tr_tl"); } catch (e) {} }
+  sel.value = proxyLang && GT[proxyLang] ? "gt:" + proxyLang : LANG;
+  document.getElementById("langCode").textContent = (proxyLang || LANG).split("-")[0].toUpperCase();
+  sel.addEventListener("change", () => {
+    const v = sel.value;
+    if (v.startsWith("gt:")) { location.href = gtUrl(v.slice(3)); return; }
+    try { localStorage.setItem("lang", v); } catch (e) {}
+    const base = ON_PROXY ? SITE_URL : location.pathname;
+    location.href = `${base}?lang=${v}${location.hash}`;
+  });
+
+  /* browser speaks a language we didn't translate by hand: offer Google Translate once */
+  const det = window.__LANG_DETECTED;
+  let dismissed = false; try { dismissed = localStorage.getItem("trbar") === "off"; } catch (e) {}
+  if (det && GT[det] && !ON_PROXY && !dismissed) {
+    const bar = document.getElementById("trBar");
+    document.getElementById("trQ").textContent = D.barQ.replace("{lang}", GT[det]);
+    const go = document.getElementById("trGo"); go.textContent = D.barBtn; go.href = gtUrl(det);
+    const x = document.getElementById("trX"); x.setAttribute("aria-label", D.barClose);
+    x.addEventListener("click", () => { bar.hidden = true; try { localStorage.setItem("trbar", "off"); } catch (e) {} });
+    bar.hidden = false;
+  }
+} finally {
+  document.documentElement.classList.remove("i18n-wait");
+}
 
 document.querySelectorAll("[data-repo]").forEach(a => {
   a.href = `https://github.com/${GITHUB_ORG}/${a.dataset.repo}`.replace(/\/$/, "");
@@ -463,19 +590,19 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
 
     // node geometry: [id, x, y, w, h, title, sub, kind]
     const def = narrow ? [
-      ["client", 30, 30, 160, 58, "Клиенты", "пишут в любое время", "in"],
-      ["tg", 210, 30, 160, 58, "Telegram", "чат, кнопки, анкета", "in"],
-      ["bot", 90, 196, 220, 74, "Бот", "логика + база данных", "core"],
-      ["crm", 30, 372, 160, 58, "Заявка", "со статусом", "out"],
-      ["xls", 210, 372, 160, 58, "Таблица", "Excel / Google", "out"],
-      ["mgr", 120, 470, 160, 58, "Менеджеру", "уведомление", "out"],
+      ["client", 30, 30, 160, 58, D.nClient, D.nClientS, "in"],
+      ["tg", 210, 30, 160, 58, "Telegram", D.nTgS, "in"],
+      ["bot", 90, 196, 220, 74, D.nBot, D.nBotS, "core"],
+      ["crm", 30, 372, 160, 58, D.nCrmShort, D.nCrmS, "out"],
+      ["xls", 210, 372, 160, 58, D.nXls, "Excel / Google", "out"],
+      ["mgr", 120, 470, 160, 58, D.nMgr, D.nMgrShort, "out"],
     ] : [
-      ["client", 24, 121, 168, 58, "Клиенты", "пишут в любое время", "in"],
-      ["tg", 262, 121, 176, 58, "Telegram", "чат, кнопки, анкета", "in"],
-      ["bot", 508, 108, 232, 84, "Бот", "логика + база данных", "core"],
-      ["crm", 860, 34, 190, 58, "Заявка в CRM", "со статусом", "out"],
-      ["xls", 860, 121, 190, 58, "Таблица", "Excel / Google", "out"],
-      ["mgr", 860, 208, 190, 58, "Менеджеру", "уведомление в Telegram", "out"],
+      ["client", 24, 121, 168, 58, D.nClient, D.nClientS, "in"],
+      ["tg", 262, 121, 176, 58, "Telegram", D.nTgS, "in"],
+      ["bot", 508, 108, 232, 84, D.nBot, D.nBotS, "core"],
+      ["crm", 860, 34, 190, 58, D.nCrm, D.nCrmS, "out"],
+      ["xls", 860, 121, 190, 58, D.nXls, "Excel / Google", "out"],
+      ["mgr", 860, 208, 190, 58, D.nMgr, D.nMgrS, "out"],
     ];
     nodes = Object.fromEntries(def.map(([id, x, y, w, h, t, s, k]) => [id, { id, x, y, w, h, t, s, k }]));
     const c = (n, side) => side === "r" ? [n.x + n.w, n.y + n.h / 2] : side === "l" ? [n.x, n.y + n.h / 2]
@@ -507,9 +634,9 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
 
     // small labels on the wires (real data that travels)
     if (!narrow) {
-      el("text", { x: 196, y: 112, class: "tag" }).textContent = "«хочу записаться»";
-      el("text", { x: 446, y: 214, class: "tag" }).textContent = "/start → анкета";
-      el("text", { x: 730, y: 50, class: "tag" }).textContent = "№12 · новая";
+      el("text", { x: 196, y: 112, class: "tag" }).textContent = D.tag1;
+      el("text", { x: 446, y: 214, class: "tag" }).textContent = D.tag2;
+      el("text", { x: 730, y: 50, class: "tag" }).textContent = D.tag3;
       el("text", { x: 760, y: 270, class: "tag" }).textContent = "push";
     }
 
@@ -517,8 +644,12 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
     for (const n of Object.values(nodes)) {
       const g = el("g", { class: `node ${n.k}`, "data-id": n.id }, gNodes);
       el("rect", { x: n.x, y: n.y, width: n.w, height: n.h, rx: n.k === "core" ? 14 : 10 }, g);
-      el("text", { x: n.x + 16, y: n.y + (n.k === "core" ? 36 : 26) }, g).textContent = n.t;
-      el("text", { x: n.x + 16, y: n.y + (n.k === "core" ? 60 : 45), class: "sub" }, g).textContent = n.s;
+      const t1 = el("text", { x: n.x + 16, y: n.y + (n.k === "core" ? 36 : 26) }, g); t1.textContent = n.t;
+      const t2 = el("text", { x: n.x + 16, y: n.y + (n.k === "core" ? 60 : 45), class: "sub" }, g); t2.textContent = n.s;
+      for (const t of [t1, t2]) {
+        let size = parseFloat(getComputedStyle(t).fontSize);
+        while (t.getComputedTextLength() > n.w - 28 && size > 9) { size -= 0.5; t.style.fontSize = size + "px"; }
+      }
       g.addEventListener("mouseenter", () => highlight(n.id, true));
       g.addEventListener("mouseleave", () => highlight(n.id, false));
     }
@@ -579,6 +710,7 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
   function stop() { running = false; cancelAnimationFrame(raf); }
 
   layout();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const r = running; stop(); layout(); if (r) start(); });
   new IntersectionObserver(([e]) => e.isIntersecting ? start() : stop()).observe(svg);
   let rw = innerWidth;
   addEventListener("resize", () => { if (Math.abs(innerWidth - rw) > 40) { rw = innerWidth; stop(); layout(); start(); } });
@@ -593,7 +725,7 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
     ["cmd", "cd ../chat-guard-bot && pytest -q"], ["ok", "23 passed in 0.02s"],
     ["cmd", "cd ../price-monitor && pytest -q"], ["ok", "15 passed in 0.19s"],
     ["cmd", "cd ../crypto-alert-bot && pytest -q"], ["ok", "19 passed in 0.07s"],
-    ["dim", "итого: 101 passed, 0 failed"],
+    ["dim", D.termTotal],
   ];
   const render = upTo => {
     out.innerHTML = script.slice(0, upTo).map(([k, t]) => `<div class="${k}">${t}</div>`).join("") + (upTo < script.length ? '<span class="cursor"></span>' : "");
@@ -623,18 +755,9 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
 (() => {
   const log = document.getElementById("log");
   const box = document.getElementById("replies");
-  const now = () => new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-  const intro = [
-    ["out", "Здравствуйте! Нужен бот, чтобы клиенты сами записывались на стрижку"],
-    ["in", 'Здравствуйте! Такой у нас есть: анкета, проверка занятого времени, заявка вам в Telegram и выгрузка в Excel. <a href="#leads-bot">Пример с кодом</a>. Под ваш салон — 2–3 дня, от $60.'],
-  ];
-  const topics = [
-    { q: "А магазин в Telegram?", a: 'Да: каталог, корзина, доставка или самовывоз, заказы приходят вам с кнопками статусов. <a href="#shop-bot">Пример магазина</a>, от $60.' },
-    { q: "Спамеры в группе замучили", a: 'Поставим бота-модератора: капча новичкам, мьют за флуд, ссылки от новых участников удаляются. <a href="#chat-guard-bot">Как это работает</a>, от $40.' },
-    { q: "Хочу следить за ценами конкурентов", a: 'Сделаем парсер: каждое утро отчёт в Telegram о том, что подешевело и подорожало, плюс таблица Excel. <a href="#price-monitor">Пример парсера</a>, от $25.' },
-    { q: "Нужны уведомления по крипте", a: 'Бот пришлёт уведомление, когда монета пересечёт уровень: <code>/alert btc &gt; 70000</code>. <a href="#crypto-alert-bot">Пример бота</a>, от $35.' },
-    { q: "Как оплачивать?", a: 'Переводом на карту или в USDT. Новым заказчикам — предоплата 50%, остальное после проверки. <a href="#prices">Все цены</a>.' },
-  ];
+  const now = () => new Date().toLocaleTimeString(D.locale, { hour: "2-digit", minute: "2-digit" });
+  const intro = [["out", D.i1], ["in", D.i2]];
+  const topics = [1, 2, 3, 4, 5].map(i => ({ q: D["q" + i], a: D["a" + i] }));
   const bubble = (side, html) => {
     const d = document.createElement("div");
     d.className = `msg ${side}`; d.innerHTML = `${html}<time>${now()}</time>`;
@@ -643,7 +766,7 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
   const answer = html => {
     if (reduce) { bubble("in", html); return Promise.resolve(); }
     const t = document.createElement("div");
-    t.className = "typing"; t.setAttribute("aria-label", "печатает"); t.innerHTML = "<i></i><i></i><i></i>";
+    t.className = "typing"; t.setAttribute("aria-label", D.typing); t.innerHTML = "<i></i><i></i><i></i>";
     log.appendChild(t); log.scrollTop = log.scrollHeight;
     return new Promise(r => setTimeout(() => { t.remove(); bubble("in", html); r(); }, 850));
   };
@@ -655,7 +778,7 @@ addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), 
       b.disabled = true; bubble("out", topic.q); await answer(topic.a); b.remove();
       if (!box.querySelector("button")) {
         const c = document.createElement("button");
-        c.type = "button"; c.textContent = "Обсудить свою задачу";
+        c.type = "button"; c.textContent = D.discuss;
         c.addEventListener("click", () => { location.href = CONTACT_URL; });
         box.appendChild(c);
       }
