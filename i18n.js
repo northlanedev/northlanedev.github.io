@@ -75,7 +75,7 @@ ru: {
   ctH2: "Опишите задачу — ответим с планом и ценой",
   ctP: "Если похожий проект уже есть в портфолио, начнём с него, и выйдет быстрее и дешевле.",
   ctX: "Написать в X", ctLx: "Заказать через LaborX (с эскроу)", ctGh: "Все проекты на GitHub",
-  footer: "Northlane Dev. Код проектов на этой странице открыт и распространяется по лицензии MIT."
+  footer: "<span translate='no'>Northlane Dev</span>. Код проектов на этой странице открыт и распространяется по лицензии MIT."
 },
 
 en: {
@@ -151,7 +151,7 @@ en: {
   ctH2: "Describe your task, and we'll reply with a plan and a price",
   ctP: "If a similar project is already in the portfolio, we'll start from it, which makes it faster and cheaper.",
   ctX: "Message on X", ctLx: "Order via LaborX (with escrow)", ctGh: "All projects on GitHub",
-  footer: "Northlane Dev. The code of the projects on this page is open and released under the MIT license."
+  footer: "<span translate='no'>Northlane Dev</span>. The code of the projects on this page is open and released under the MIT license."
 },
 
 uk: {
@@ -227,7 +227,7 @@ uk: {
   ctH2: "Опишіть задачу — відповімо з планом і ціною",
   ctP: "Якщо схожий проєкт уже є в портфоліо, почнемо з нього, і вийде швидше й дешевше.",
   ctX: "Написати в X", ctLx: "Замовити через LaborX (з ескроу)", ctGh: "Усі проєкти на GitHub",
-  footer: "Northlane Dev. Код проєктів на цій сторінці відкритий і поширюється за ліцензією MIT."
+  footer: "<span translate='no'>Northlane Dev</span>. Код проєктів на цій сторінці відкритий і поширюється за ліцензією MIT."
 },
 
 kk: {
@@ -303,7 +303,7 @@ kk: {
   ctH2: "Тапсырманы сипаттаңыз — жоспар мен бағамен жауап береміз",
   ctP: "Портфолиода ұқсас жоба болса, содан бастаймыз, сонда жылдамырақ әрі арзанырақ болады.",
   ctX: "X-ке жазу", ctLx: "LaborX арқылы тапсырыс беру (эскроумен)", ctGh: "GitHub-тағы барлық жобалар",
-  footer: "Northlane Dev. Осы беттегі жобалардың коды ашық және MIT лицензиясы бойынша таратылады."
+  footer: "<span translate='no'>Northlane Dev</span>. Осы беттегі жобалардың коды ашық және MIT лицензиясы бойынша таратылады."
 },
 
 es: {
@@ -379,7 +379,7 @@ es: {
   ctH2: "Describe tu tarea y te respondemos con plan y precio",
   ctP: "Si ya hay un proyecto parecido en el portafolio, partimos de él y sale más rápido y barato.",
   ctX: "Escribir en X", ctLx: "Encargar por LaborX (con escrow)", ctGh: "Todos los proyectos en GitHub",
-  footer: "Northlane Dev. El código de los proyectos de esta página es abierto y se distribuye bajo licencia MIT."
+  footer: "<span translate='no'>Northlane Dev</span>. El código de los proyectos de esta página es abierto y se distribuye bajo licencia MIT."
 },
 
 pt: {
@@ -455,7 +455,7 @@ pt: {
   ctH2: "Descreva sua tarefa e respondemos com plano e preço",
   ctP: "Se já houver um projeto parecido no portfólio, partimos dele, e fica mais rápido e barato.",
   ctX: "Escrever no X", ctLx: "Contratar pelo LaborX (com escrow)", ctGh: "Todos os projetos no GitHub",
-  footer: "Northlane Dev. O código dos projetos desta página é aberto e distribuído sob a licença MIT."
+  footer: "<span translate='no'>Northlane Dev</span>. O código dos projetos desta página é aberto e distribuído sob a licença MIT."
 },
 
 de: {
@@ -531,7 +531,7 @@ de: {
   ctH2: "Beschreiben Sie Ihre Aufgabe – wir antworten mit Plan und Preis",
   ctP: "Gibt es schon ein ähnliches Projekt im Portfolio, starten wir damit – das geht schneller und ist günstiger.",
   ctX: "Auf X schreiben", ctLx: "Über LaborX beauftragen (mit Escrow)", ctGh: "Alle Projekte auf GitHub",
-  footer: "Northlane Dev. Der Code der Projekte auf dieser Seite ist offen und steht unter der MIT-Lizenz."
+  footer: "<span translate='no'>Northlane Dev</span>. Der Code der Projekte auf dieser Seite ist offen und steht unter der MIT-Lizenz."
 },
 
 fr: {
@@ -607,7 +607,7 @@ fr: {
   ctH2: "Décrivez votre tâche, nous répondons avec un plan et un prix",
   ctP: "Si un projet similaire existe déjà dans le portfolio, nous partons de lui : c'est plus rapide et moins cher.",
   ctX: "Écrire sur X", ctLx: "Commander via LaborX (avec séquestre)", ctGh: "Tous les projets sur GitHub",
-  footer: "Northlane Dev. Le code des projets de cette page est ouvert et distribué sous licence MIT."
+  footer: "<span translate='no'>Northlane Dev</span>. Le code des projets de cette page est ouvert et distribué sous licence MIT."
 },
 
 tr: {
@@ -683,7 +683,7 @@ tr: {
   ctH2: "İşinizi anlatın, plan ve fiyatla dönelim",
   ctP: "Portföyde benzer bir proje varsa ondan başlarız, böylece daha hızlı ve ucuz olur.",
   ctX: "X'ten yazın", ctLx: "LaborX üzerinden sipariş verin (emanetli ödeme)", ctGh: "GitHub'daki tüm projeler",
-  footer: "Northlane Dev. Bu sayfadaki projelerin kodu açıktır ve MIT lisansıyla dağıtılır."
+  footer: "<span translate='no'>Northlane Dev</span>. Bu sayfadaki projelerin kodu açıktır ve MIT lisansıyla dağıtılır."
 },
 
 zh: {
@@ -759,7 +759,7 @@ zh: {
   ctH2: "描述你的任务，我们回复方案和报价",
   ctP: "如果作品集里已有类似项目，我们就从它开始，更快也更便宜。",
   ctX: "在 X 上联系", ctLx: "通过 LaborX 下单（托管付款）", ctGh: "GitHub 上的全部项目",
-  footer: "Northlane Dev。本页项目的代码开源，采用 MIT 许可证发布。"
+  footer: "<span translate='no'>Northlane Dev</span>。本页项目的代码开源，采用 MIT 许可证发布。"
 }
 };
 
