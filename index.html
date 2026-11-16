@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northlane Dev — Telegram-боты и парсеры для бизнеса</title>
+<meta name="description" content="Делаем Telegram-ботов для записи, продаж и модерации, парсеры цен и автоматизацию на Python. Открытый код, тесты, фиксированные цены.">
+<meta property="og:title" content="Northlane Dev — Telegram-боты и парсеры">
+<meta property="og:description" content="Боты для записи, магазины в Telegram, антиспам для групп, мониторинг цен. Открытый код, тесты, фиксированные цены.">
+<meta property="og:image" content="https://northlanedev.github.io/assets/cover-leads-bot.png">
+<meta name="theme-color" content="#EEF2F6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 26'%3E%3Cpath d='M0 26 11 0l11 26-11-6z' fill='%231F8FE5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #EEF2F6;
+  --paper-2: #E4EAF1;
+  --grid: #D3DCE6;
+  --ink: #0F1B2D;
+  --ink-2: #4B5B70;
+  --wire: #9AABBF;
+  --signal: #1F8FE5;
+  --signal-ink: #1670B8;
+  --done: #23A15F;
+  --term: #0F1B2D;
+  --display: "Unbounded", "Golos Text", system-ui, sans-serif;
+  --text: "Golos Text", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; color: var(--ink); font: 400 17px/1.6 var(--text);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--signal); color: #fff; }
+a { color: var(--signal-ink); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+code { font: 500 .9em var(--mono); background: var(--paper-2); padding: .1em .35em; border-radius: 5px; }
+.wrap { width: min(1180px, 100% - 40px); margin-inline: auto; }
+.sheet { background: rgba(238, 242, 246, .92); }   /* calmer paper for text-heavy sections */
+
+/* ---------------- header ---------------- */
+header { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px); background: rgba(238, 242, 246, .78); border-bottom: 1px solid transparent; transition: border-color .3s; }
+header.scrolled { border-bottom-color: var(--grid); }
+header .wrap { display: flex; align-items: center; gap: 28px; height: 68px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font: 700 17px/1 var(--display); letter-spacing: -.01em; white-space: nowrap; }
+.brand svg { width: 18px; height: 22px; }
+nav { display: flex; gap: 22px; margin-left: auto; }
+nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: 15px; }
+nav a:hover { color: var(--ink); }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; cursor: pointer;
+  font: 600 15px/1 var(--text); text-decoration: none; border: 0; border-radius: 999px; padding: 14px 22px;
+  background: var(--ink); color: #fff; transition: transform .2s var(--ease), background .2s;
+}
+.btn:hover { background: var(--signal-ink); transform: translateY(-1px); }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: #fff; }
+
+/* ---------------- hero ---------------- */
+.hero { padding: 56px 0 0; }
+.hero-top { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 48px; align-items: end; }
+h1 {
+  font: 700 clamp(38px, 6.2vw, 84px)/1.02 var(--display); letter-spacing: -.035em; margin: 0;
+}
+h1 .line { display: block; overflow: hidden; padding-bottom: .06em; }
+h1 .line > span { display: inline-block; transform: translateY(105%); animation: rise .9s var(--ease) forwards; }
+h1 .line:nth-child(2) > span { animation-delay: .09s; }
+h1 .line:nth-child(3) > span { animation-delay: .18s; }
+@keyframes rise { to { transform: none; } }
+.hero-side p { margin: 0 0 24px; color: var(--ink-2); font-size: 18px; max-width: 40ch; opacity: 0; animation: fade .8s .45s var(--ease) forwards; }
+.hero-side .actions { display: flex; flex-wrap: wrap; gap: 12px; opacity: 0; animation: fade .8s .55s var(--ease) forwards; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* the automation schematic: the one memorable thing */
+.schematic { position: relative; margin-top: 52px; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); background: rgba(238, 242, 246, .55); }
+.schematic svg { display: block; width: 100%; height: auto; }
+.schematic .legend { position: absolute; left: 0; bottom: 10px; font: 400 13px/1.3 var(--text); color: var(--ink-2); }
+.wire { fill: none; stroke: var(--wire); stroke-width: 1.5; transition: stroke .25s; }
+.wire.hot { stroke: var(--signal); stroke-width: 2; }
+.node rect { fill: #fff; stroke: var(--ink); stroke-width: 1.5; transition: fill .25s, stroke .25s; }
+.node text { font: 500 15px var(--text); fill: var(--ink); }
+.node .sub { font: 400 12px var(--text); fill: var(--ink-2); }
+.node { cursor: default; }
+.node:hover rect, .node.hot rect { stroke: var(--signal); }
+.node.core rect { fill: var(--ink); }
+.node.core text { fill: #fff; font: 700 17px var(--display); }
+.node.core .sub { fill: #B8C6D8; }
+.node.out.hot rect { fill: #EAF7EF; stroke: var(--done); }
+.packet { fill: var(--signal); }
+.packet.out { fill: var(--done); }
+.tag { font: 500 11px var(--mono); fill: var(--ink-2); }
+
+/* ---------------- sections ---------------- */
+section { padding: 108px 0; }
+.kicker { font: 500 15px var(--text); color: var(--signal-ink); margin: 0 0 14px; }
+h2 { font: 700 clamp(28px, 3.6vw, 46px)/1.08 var(--display); letter-spacing: -.03em; margin: 0 0 18px; max-width: 22ch; }
+.lead { color: var(--ink-2); font-size: 18px; max-width: 60ch; margin: 0 0 56px; }
+
+/* projects as short case studies */
+.case { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 56px; align-items: center; padding: 48px 0; border-top: 1.5px solid var(--ink); scroll-margin-top: 80px; }
+.case:last-child { border-bottom: 1.5px solid var(--ink); }
+.case:nth-child(even) .shot { order: 2; }
+.shot { position: relative; border-radius: 16px; overflow: hidden; background: #0E1220; box-shadow: 0 30px 50px -34px rgba(15, 27, 45, .75); }
+.shot img { display: block; width: 100%; height: auto; transition: transform .8s var(--ease); }
+.case:hover .shot img { transform: scale(1.025); }
+.case h3 { font: 700 26px/1.15 var(--display); letter-spacing: -.02em; margin: 0 0 18px; }
+.case dl { display: grid; grid-template-columns: 112px 1fr; gap: 10px 18px; margin: 0 0 22px; }
+.case dt { font-weight: 600; color: var(--ink); }
+.case dd { margin: 0; color: var(--ink-2); }
+.case .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; font-size: 15px; color: var(--ink-2); }
+.case .meta a { font-weight: 600; }
+
+/* scroll-driven reveal (progressive enhancement, CSS only) */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .shot { animation: unveil linear both; animation-timeline: view(); animation-range: entry 0% cover 38%; }
+    .shot img { animation: settle linear both; animation-timeline: view(); animation-range: entry 0% cover 50%; }
+    @keyframes unveil { from { clip-path: inset(18% 10% 18% 10% round 16px); } to { clip-path: inset(0 0 0 0 round 16px); } }
+    @keyframes settle { from { transform: scale(1.14); } to { transform: scale(1); } }
+  }
+}
+
+/* tests terminal */
+.proof { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 56px; align-items: center; }
+.term { background: var(--term); color: #D7E2F0; border-radius: 16px; padding: 20px 22px 24px; font: 400 14px/1.75 var(--mono); min-height: 330px; box-shadow: 0 30px 50px -34px rgba(15, 27, 45, .9); }
+.term .bar { display: flex; gap: 7px; margin-bottom: 16px; }
+.term .bar i { width: 11px; height: 11px; border-radius: 50%; background: #2C3A52; }
+.term .cmd { color: #fff; }
+.term .cmd::before { content: "$ "; color: #6E83A0; }
+.term .ok { color: #5BD38D; }
+.term .dim { color: #6E83A0; }
+.term .cursor { display: inline-block; width: 8px; height: 16px; background: #D7E2F0; vertical-align: -3px; animation: blinkc 1s steps(1) infinite; }
+@keyframes blinkc { 50% { opacity: 0; } }
+.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.facts li { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: baseline; }
+.facts b { font: 700 34px/1 var(--display); letter-spacing: -.03em; min-width: 3.2ch; }
+.facts span { color: var(--ink-2); }
+
+/* chat demo */
+.demo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 56px; align-items: center; }
+.chat { background: #DCE5EE; background-image: radial-gradient(#C9D6E3 1.2px, transparent 1.3px); background-size: 22px 22px; border-radius: 22px; overflow: hidden; border: 1.5px solid var(--ink); }
+.chat-head { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: #fff; border-bottom: 1.5px solid var(--ink); }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); display: grid; place-items: center; }
+.avatar svg { width: 15px; height: 18px; }
+.chat-head b { display: block; font-weight: 600; }
+.chat-head small { color: var(--ink-2); font-size: 14px; }
+.log { display: flex; flex-direction: column; gap: 8px; padding: 18px 16px 6px; height: 380px; overflow-y: auto; }
+.msg { max-width: 84%; padding: 9px 13px 8px; border-radius: 18px; font-size: 16px; line-height: 1.45; box-shadow: 0 1px 1px rgba(15, 27, 45, .12); animation: pop .35s var(--ease); }
+@keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+.msg.in { align-self: flex-start; background: #fff; border-bottom-left-radius: 6px; }
+.msg.out { align-self: flex-end; background: #E3F7D0; border-bottom-right-radius: 6px; }
+.msg time { float: right; margin: 6px 0 -4px 10px; font-size: 12px; color: #7F8E9F; }
+.msg a { font-weight: 600; }
+.typing { align-self: flex-start; background: #fff; border-radius: 18px; border-bottom-left-radius: 6px; padding: 12px 14px; display: flex; gap: 4px; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: #9AA8B8; animation: blink 1s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 50% { opacity: .25; } }
+.replies { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 16px 18px; }
+.replies button { font: 500 15px/1.2 var(--text); color: var(--signal-ink); background: #fff; border: 1px solid #fff; border-radius: 12px; padding: 9px 13px; cursor: pointer; transition: transform .15s; }
+.replies button:hover { transform: translateY(-1px); }
+
+/* prices */
+.prices { width: 100%; border-collapse: collapse; }
+.prices th { text-align: left; font: 500 14px var(--text); color: var(--ink-2); padding: 0 16px 14px 0; }
+.prices td { padding: 20px 16px 20px 0; border-top: 1.5px solid var(--ink); vertical-align: top; }
+.prices tr:last-child td { border-bottom: 1.5px solid var(--ink); }
+.prices td:first-child { font-weight: 600; }
+.prices small { display: block; font-weight: 400; color: var(--ink-2); font-size: 15px; margin-top: 3px; }
+.prices .price { font: 700 22px/1.2 var(--display); white-space: nowrap; letter-spacing: -.02em; }
+.prices .time { white-space: nowrap; color: var(--ink-2); }
+.note { color: var(--ink-2); font-size: 15px; margin-top: 20px; max-width: 64ch; }
+
+/* process: an actual sequence */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; counter-reset: s; border-top: 1.5px solid var(--ink); }
+.steps li { counter-increment: s; padding: 26px 24px 0 0; position: relative; }
+.steps li::before { content: counter(s); position: absolute; top: -15px; left: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--paper); border: 1.5px solid var(--ink); display: grid; place-items: center; font: 700 13px var(--display); }
+.steps b { display: block; font-weight: 600; margin: 10px 0 6px; }
+.steps p { margin: 0; color: var(--ink-2); font-size: 16px; }
+
+/* contact */
+.contact { background: var(--ink); color: #fff; border-radius: 28px; padding: 64px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: end; position: relative; overflow: hidden; }
+.contact h2 { color: #fff; max-width: 18ch; }
+.contact p { color: #B8C6D8; margin: 0; max-width: 46ch; }
+.contact .links { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.contact .btn { background: var(--signal); }
+.contact .btn:hover { background: #fff; color: var(--ink); }
+.contact .links a:not(.btn) { color: #fff; }
+footer { padding: 40px 0 56px; color: var(--ink-2); font-size: 15px; }
+
+@media (max-width: 960px) {
+  nav { display: none; }
+  .hero-top, .case, .proof, .demo, .contact { grid-template-columns: 1fr; }
+  .case:nth-child(even) .shot { order: 0; }
+  .steps { grid-template-columns: 1fr 1fr; row-gap: 40px; }
+  .contact { padding: 40px 28px; }
+  section { padding: 80px 0; }
+}
+@media (max-width: 560px) {
+  header .btn { padding: 11px 16px; }
+  .steps { grid-template-columns: 1fr; }
+  .case dl { grid-template-columns: 1fr; gap: 2px 0; }
+  .case dd { margin-bottom: 10px; }
+  .prices .time, .prices th:nth-child(3) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  h1 .line > span, .hero-side p, .hero-side .actions { animation: none; transform: none; opacity: 1; }
+  .msg, .typing i, .term .cursor { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Northlane Dev, наверх">
+      <svg viewBox="0 0 22 26" aria-hidden="true"><path d="M0 26 11 0l11 26-11-6z" fill="#1F8FE5"/></svg>
+      Northlane Dev
+    </a>
+    <nav aria-label="Разделы">
+      <a href="#work">Проекты</a>
+      <a href="#proof">Как проверяем</a>
+      <a href="#prices">Цены</a>
+      <a href="#process">Как работаем</a>
+    </nav>
+    <a class="btn" data-contact href="#contact">Обсудить задачу</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap hero-top">
+      <h1 aria-label="Telegram-боты и парсеры, которые работают за вас">
+        <span class="line" aria-hidden="true"><span>Telegram-боты</span></span>
+        <span class="line" aria-hidden="true"><span>и парсеры, которые</span></span>
+        <span class="line" aria-hidden="true"><span>работают за вас</span></span>
+      </h1>
+      <div class="hero-side">
+        <p>Принимают заявки, продают, следят за ценами и чистят чат от спама, пока вы занимаетесь делом. Небольшие задачи — за 1–3 дня по фиксированной цене.</p>
+        <div class="actions">
+          <a class="btn" href="#work">Смотреть проекты</a>
+          <a class="btn ghost" href="#demo">Задать вопрос боту</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <figure class="schematic" id="schematic" aria-label="Схема: сообщения клиентов попадают в бота, а он превращает их в заявки, таблицы и уведомления менеджеру">
+        <svg id="flow" viewBox="0 0 1180 300" role="img" aria-hidden="true"></svg>
+      </figure>
+    </div>
+  </div>
+
+  <section id="work">
+    <div class="wrap">
+      <p class="kicker">Проекты с открытым кодом</p>
+      <h2>Пять готовых решений, которые адаптируются под ваш бизнес</h2>
+      <p class="lead">Это демо-проекты: код открыт, у каждого есть тесты и инструкция. Под конкретную задачу любой из них дорабатывается за пару дней, а это быстрее и дешевле разработки с нуля.</p>
+
+      <div class="cases">
+        <article class="case" id="leads-bot">
+          <div class="shot"><img src="assets/cover-leads-bot.png" alt="Бот заявок и записи: клиент выбирает услугу и время, менеджер получает заявку" width="1200" height="675" loading="lazy"></div>
+          <div>
+            <h3>Бот заявок и записи</h3>
+            <dl>
+              <dt>Задача</dt><dd>Клиенты пишут в разное время, заявки теряются в переписке, а запись ведётся вручную.</dd>
+              <dt>Решение</dt><dd>Бот проводит клиента по анкете, понимает «завтра 15:30» и не даёт занять уже занятое время.</dd>
+              <dt>Результат</dt><dd>Менеджер сразу получает карточку заявки со статусами и выгрузку в Excel.</dd>
+            </dl>
+            <div class="meta"><span>Python, aiogram 3, SQLite, 31 тест</span><a data-repo="leads-bot" href="#">Код на GitHub</a></div>
+          </div>
+        </article>
+
+        <article class="case" id="shop-bot">
+          <div class="shot"><img src="assets/cover-shop-bot.png" alt="Магазин в Telegram: корзина и подтверждённый заказ" width="1200" height="675" loading="lazy"></div>
+          <div>
+            <h3>Магазин в Telegram</h3>
+            <dl>
+              <dt>Задача</dt><dd>Заказы приходят в личку вперемешку, а маркетплейсы забирают комиссию.</dd>
+              <dt>Решение</dt><dd>Каталог, корзина, самовывоз или доставка с порогом бесплатной доставки, статусы для покупателя.</dd>
+              <dt>Результат</dt><dd>Заказы приходят владельцу готовыми, с кнопками статусов и подсчётом выручки.</dd>
+            </dl>
+            <div class="meta"><span>Python, aiogram 3, SQLite, 13 тестов</span><a data-repo="shop-bot" href="#">Код на GitHub</a></div>
+          </div>
+        </article>
+
+        <article class="case" id="chat-guard-bot">
+          <div class="shot"><img src="assets/cover-chat-guard-bot.png" alt="Антиспам-бот: капча для нового участника и мьют спамера" width="1200" height="675" loading="lazy"></div>
+          <div>
+            <h3>Антиспам для групп</h3>
+            <dl>
+              <dt>Задача</dt><dd>Спам-боты заходят в чат и рассылают рекламу быстрее, чем админы успевают удалять.</dd>
+              <dt>Решение</dt><dd>Капча новичкам, мьют за флуд, удаление ссылок от новых участников, предупреждения.</dd>
+              <dt>Результат</dt><dd>Чат чистый, а у админов остаются команды <code>/mute 30m</code>, <code>/warn</code>, <code>/ban</code>.</dd>
+            </dl>
+            <div class="meta"><span>Python, aiogram 3, 23 теста</span><a data-repo="chat-guard-bot" href="#">Код на GitHub</a></div>
+          </div>
+        </article>
+
+        <article class="case" id="price-monitor">
+          <div class="shot"><img src="assets/cover-price-monitor.png" alt="Мониторинг цен: отчёт о подешевевших и подорожавших товарах" width="1200" height="675" loading="lazy"></div>
+          <div>
+            <h3>Мониторинг цен</h3>
+            <dl>
+              <dt>Задача</dt><dd>Цены конкурентов меняются каждый день, а сверять их вручную долго.</dd>
+              <dt>Решение</dt><dd>Парсер обходит каталог, хранит историю цен и находит изменения.</dd>
+              <dt>Результат</dt><dd>Утром в Telegram приходит отчёт «подешевело / подорожало», плюс таблица Excel.</dd>
+            </dl>
+            <div class="meta"><span>Python, BeautifulSoup, openpyxl, 15 тестов</span><a data-repo="price-monitor" href="#">Код на GitHub</a></div>
+          </div>
+        </article>
+
+        <article class="case" id="crypto-alert-bot">
+          <div class="shot"><img src="assets/cover-crypto-alert-bot.png" alt="Бот крипто-алертов: команды /alert и /price" width="1200" height="675" loading="lazy"></div>
+          <div>
+            <h3>Крипто-алерты</h3>
+            <dl>
+              <dt>Задача</dt><dd>Нужно знать, когда монета пересекает уровень, не сидя весь день в терминале.</dd>
+              <dt>Решение</dt><dd>Команда <code>/alert btc &gt; 70000</code>, разовые и повторяющиеся алерты, работа в группах.</dd>
+              <dt>Результат</dt><dd>Уведомление приходит вовремя, а все цены берутся одним запросом с кэшем, без упора в лимиты API.</dd>
+            </dl>
+            <div class="meta"><span>Python, aiogram 3, CoinGecko API, 19 тестов</span><a data-repo="crypto-alert-bot" href="#">Код на GitHub</a></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="proof" class="sheet">
+    <div class="wrap proof">
+      <div>
+        <p class="kicker">Как проверяем</p>
+        <h2>Логика покрыта тестами, поэтому правки не ломают старое</h2>
+        <p class="lead" style="margin-bottom:36px">Логику бота мы отделяем от Telegram и проверяем автоматически. Когда вы просите доработку, тесты сразу показывают, что всё остальное работает как раньше.</p>
+        <ul class="facts">
+          <li><b>101</b><span>автотест в пяти проектах портфолио</span></li>
+          <li><b>3 000</b><span>строк кода на Python в открытом доступе</span></li>
+          <li><b>2</b><span>правки входят в цену любого заказа</span></li>
+        </ul>
+      </div>
+      <div class="term" id="term" role="img" aria-label="Терминал: тесты всех пяти проектов проходят, 101 тест">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div id="termOut"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="wrap demo">
+      <div>
+        <p class="kicker">Попробуйте сами</p>
+        <h2>Спросите, и бот подскажет похожий проект</h2>
+        <p class="lead" style="margin-bottom:0">Так выглядит переписка с ботом в Telegram: быстрые кнопки, понятные ответы, ссылки по делу. Нажмите на вопрос.</p>
+      </div>
+      <div class="chat" aria-label="Демо-переписка">
+        <div class="chat-head">
+          <div class="avatar"><svg viewBox="0 0 22 26" aria-hidden="true"><path d="M0 26 11 0l11 26-11-6z" fill="#40C4FF"/></svg></div>
+          <div><b>Northlane Dev</b><small>бот студии</small></div>
+        </div>
+        <div class="log" id="log" aria-live="polite"></div>
+        <div class="replies" id="replies"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prices" class="sheet">
+    <div class="wrap">
+      <p class="kicker">Цены</p>
+      <h2>Фиксированная цена до начала работы</h2>
+      <p class="lead">Если задача больше, разобьём её на этапы и назовём цену каждого. Сумма по ходу работы не растёт.</p>
+      <table class="prices">
+        <thead><tr><th>Задача</th><th>Цена</th><th>Срок</th></tr></thead>
+        <tbody>
+          <tr><td>Telegram-бот: команды, кнопки, одна интеграция<small>например, анкета с отправкой заявки вам в Telegram</small></td><td class="price">от $35</td><td class="time">1–2 дня</td></tr>
+          <tr><td>Бот с базой данных и админкой<small>запись, магазин, статусы, выгрузка в Excel</small></td><td class="price">от $60</td><td class="time">2–3 дня</td></tr>
+          <tr><td>Бот-модератор для группы<small>капча, антиспам, команды для админов</small></td><td class="price">от $40</td><td class="time">1–2 дня</td></tr>
+          <tr><td>Парсер с выгрузкой в Excel или Google Таблицы<small>расписание и уведомления — дополнительно</small></td><td class="price">от $25</td><td class="time">1–2 дня</td></tr>
+          <tr><td>Исправить или доработать вашего бота<small>разберёмся в чужом коде и опишем, что поменяли</small></td><td class="price">от $20</td><td class="time">от 1 дня</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Оплата переводом на карту или в USDT. Новым заказчикам — предоплата 50%, остальное после проверки результата. Две правки входят в цену.</p>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <p class="kicker">Как работаем</p>
+      <h2>От первого сообщения до готового бота — 2–4 дня</h2>
+      <p class="lead">Техническое задание писать не нужно: мы зададим вопросы сами.</p>
+      <ol class="steps">
+        <li><b>Вы описываете задачу</b><p>Пара предложений в сообщении. Можно голосом.</p></li>
+        <li><b>Мы присылаем план и цену</b><p>Что будет делать бот, сколько стоит, когда будет готово.</p></li>
+        <li><b>Делаем и показываем</b><p>Вы проверяете тестового бота в своём Telegram.</p></li>
+        <li><b>Запускаем</b><p>Ставим на ваш сервер или передаём код с инструкцией.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact">
+        <div>
+          <h2>Опишите задачу — ответим с планом и ценой</h2>
+          <p>Если похожий проект уже есть в портфолио, начнём с него, и выйдет быстрее и дешевле.</p>
+        </div>
+        <div class="links">
+          <a class="btn" data-contact href="https://x.com/DefyHuntet">Написать в X</a>
+          <a href="https://laborx.com/freelancers/users/id480116">Заказать через LaborX (с эскроу)</a>
+          <a data-repo="" href="#">Все проекты на GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Northlane Dev. Код проектов на этой странице открыт и распространяется по лицензии MIT.</div>
+</footer>
+
+<script>
+/* ------------------------------------------------------------ settings */
+const GITHUB_ORG = "northlanedev";
+const CONTACT_URL = "https://x.com/DefyHuntet";
+
+document.querySelectorAll("[data-repo]").forEach(a => {
+  a.href = `https://github.com/${GITHUB_ORG}/${a.dataset.repo}`.replace(/\/$/, "");
+});
+document.querySelectorAll("a[data-contact]").forEach(a => { if (a.getAttribute("href") !== "#contact") a.href = CONTACT_URL; });
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const hdr = document.getElementById("hdr");
+addEventListener("scroll", () => hdr.classList.toggle("scrolled", scrollY > 8), { passive: true });
+
+/* ------------------------------------------------------------ schematic */
+(() => {
+  const svg = document.getElementById("flow");
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent = svg) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    parent.appendChild(n);
+    return n;
+  };
+
+  let nodes, wires, packets = [], running = false, raf = 0, last = 0, spawnT = 0;
+
+  function layout() {
+    svg.innerHTML = "";
+    const narrow = svg.clientWidth < 700;
+    const W = narrow ? 400 : 1180, H = narrow ? 560 : 300;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+    // node geometry: [id, x, y, w, h, title, sub, kind]
+    const def = narrow ? [
+      ["client", 30, 30, 160, 58, "Клиенты", "пишут в любое время", "in"],
+      ["tg", 210, 30, 160, 58, "Telegram", "чат, кнопки, анкета", "in"],
+      ["bot", 90, 196, 220, 74, "Бот", "логика + база данных", "core"],
+      ["crm", 30, 372, 160, 58, "Заявка", "со статусом", "out"],
+      ["xls", 210, 372, 160, 58, "Таблица", "Excel / Google", "out"],
+      ["mgr", 120, 470, 160, 58, "Менеджеру", "уведомление", "out"],
+    ] : [
+      ["client", 24, 121, 168, 58, "Клиенты", "пишут в любое время", "in"],
+      ["tg", 262, 121, 176, 58, "Telegram", "чат, кнопки, анкета", "in"],
+      ["bot", 508, 108, 232, 84, "Бот", "логика + база данных", "core"],
+      ["crm", 860, 34, 190, 58, "Заявка в CRM", "со статусом", "out"],
+      ["xls", 860, 121, 190, 58, "Таблица", "Excel / Google", "out"],
+      ["mgr", 860, 208, 190, 58, "Менеджеру", "уведомление в Telegram", "out"],
+    ];
+    nodes = Object.fromEntries(def.map(([id, x, y, w, h, t, s, k]) => [id, { id, x, y, w, h, t, s, k }]));
+    const c = (n, side) => side === "r" ? [n.x + n.w, n.y + n.h / 2] : side === "l" ? [n.x, n.y + n.h / 2]
+      : side === "b" ? [n.x + n.w / 2, n.y + n.h] : [n.x + n.w / 2, n.y];
+
+    const curve = (a, b, vertical) => {
+      if (vertical) { const my = (a[1] + b[1]) / 2; return `M${a[0]},${a[1]} C${a[0]},${my} ${b[0]},${my} ${b[0]},${b[1]}`; }
+      const mx = (a[0] + b[0]) / 2; return `M${a[0]},${a[1]} C${mx},${a[1]} ${mx},${b[1]} ${b[0]},${b[1]}`;
+    };
+    const N = nodes;
+    const wireDefs = narrow ? [
+      ["w1", "client", "tg", curve(c(N.client, "r"), c(N.tg, "l"))],
+      ["w2", "tg", "bot", curve(c(N.tg, "b"), c(N.bot, "t"), true)],
+      ["w3", "bot", "crm", curve(c(N.bot, "b"), c(N.crm, "t"), true)],
+      ["w4", "bot", "xls", curve(c(N.bot, "b"), c(N.xls, "t"), true)],
+      ["w5", "bot", "mgr", curve(c(N.bot, "b"), c(N.mgr, "t"), true)],
+    ] : [
+      ["w1", "client", "tg", curve(c(N.client, "r"), c(N.tg, "l"))],
+      ["w2", "tg", "bot", curve(c(N.tg, "r"), c(N.bot, "l"))],
+      ["w3", "bot", "crm", curve(c(N.bot, "r"), c(N.crm, "l"))],
+      ["w4", "bot", "xls", curve(c(N.bot, "r"), c(N.xls, "l"))],
+      ["w5", "bot", "mgr", curve(c(N.bot, "r"), c(N.mgr, "l"))],
+    ];
+    const gWires = el("g");
+    wires = wireDefs.map(([id, from, to, d]) => {
+      const path = el("path", { d, class: "wire", id }, gWires);
+      return { id, from, to, path, len: path.getTotalLength() };
+    });
+
+    // small labels on the wires (real data that travels)
+    if (!narrow) {
+      el("text", { x: 196, y: 112, class: "tag" }).textContent = "«хочу записаться»";
+      el("text", { x: 446, y: 214, class: "tag" }).textContent = "/start → анкета";
+      el("text", { x: 730, y: 50, class: "tag" }).textContent = "№12 · новая";
+      el("text", { x: 760, y: 270, class: "tag" }).textContent = "push";
+    }
+
+    const gNodes = el("g");
+    for (const n of Object.values(nodes)) {
+      const g = el("g", { class: `node ${n.k}`, "data-id": n.id }, gNodes);
+      el("rect", { x: n.x, y: n.y, width: n.w, height: n.h, rx: n.k === "core" ? 14 : 10 }, g);
+      el("text", { x: n.x + 16, y: n.y + (n.k === "core" ? 36 : 26) }, g).textContent = n.t;
+      el("text", { x: n.x + 16, y: n.y + (n.k === "core" ? 60 : 45), class: "sub" }, g).textContent = n.s;
+      g.addEventListener("mouseenter", () => highlight(n.id, true));
+      g.addEventListener("mouseleave", () => highlight(n.id, false));
+    }
+    packetLayer = el("g");
+    packets = [];
+  }
+  let packetLayer;
+
+  // which nodes light up when you hover a node: the full route a message takes through it
+  const ROUTES = {
+    client: ["client", "tg", "bot", "crm", "xls", "mgr"],
+    tg: ["client", "tg", "bot", "crm", "xls", "mgr"],
+    bot: ["client", "tg", "bot", "crm", "xls", "mgr"],
+    crm: ["client", "tg", "bot", "crm"],
+    xls: ["client", "tg", "bot", "xls"],
+    mgr: ["client", "tg", "bot", "mgr"],
+  };
+  function highlight(id, on) {
+    const route = new Set(ROUTES[id]);
+    for (const w of wires) w.path.classList.toggle("hot", on && route.has(w.from) && route.has(w.to));
+    svg.querySelectorAll(".node").forEach(g => g.classList.toggle("hot", on && route.has(g.dataset.id)));
+  }
+
+  // a packet rides w1 -> w2, then forks to one of the outputs
+  function spawn() {
+    const out = wires[2 + Math.floor(Math.random() * 3)];
+    const c = el("circle", { r: 5, class: "packet" }, packetLayer);
+    packets.push({ c, route: [wires[0], wires[1], out], leg: 0, t: 0, speed: 0.33 + Math.random() * 0.12 });
+  }
+
+  function tick(now) {
+    const dt = Math.min(0.05, (now - last) / 1000 || 0); last = now;
+    spawnT -= dt;
+    if (spawnT <= 0) { spawn(); spawnT = 0.75 + Math.random() * 0.6; }
+    for (const p of packets) {
+      const w = p.route[p.leg];
+      p.t += dt * p.speed * (420 / w.len);
+      if (p.t >= 1) {
+        p.leg++; p.t = 0;
+        if (p.leg === 2) p.c.setAttribute("class", "packet out");
+        if (p.leg >= p.route.length) { p.c.remove(); p.dead = true; flash(w.to); continue; }
+      }
+      const pt = p.route[p.leg].path.getPointAtLength(p.t * p.route[p.leg].len);
+      p.c.setAttribute("cx", pt.x); p.c.setAttribute("cy", pt.y);
+    }
+    packets = packets.filter(p => !p.dead);
+    raf = requestAnimationFrame(tick);
+  }
+
+  function flash(id) {
+    const g = svg.querySelector(`.node[data-id="${id}"]`);
+    if (!g) return;
+    g.classList.add("hot");
+    setTimeout(() => g.classList.remove("hot"), 380);
+  }
+
+  function start() { if (!running && !reduce) { running = true; last = performance.now(); raf = requestAnimationFrame(tick); } }
+  function stop() { running = false; cancelAnimationFrame(raf); }
+
+  layout();
+  new IntersectionObserver(([e]) => e.isIntersecting ? start() : stop()).observe(svg);
+  let rw = innerWidth;
+  addEventListener("resize", () => { if (Math.abs(innerWidth - rw) > 40) { rw = innerWidth; stop(); layout(); start(); } });
+})();
+
+/* ------------------------------------------------------------ terminal */
+(() => {
+  const out = document.getElementById("termOut");
+  const script = [
+    ["cmd", "cd leads-bot && pytest -q"], ["ok", "31 passed in 0.05s"],
+    ["cmd", "cd ../shop-bot && pytest -q"], ["ok", "13 passed in 0.03s"],
+    ["cmd", "cd ../chat-guard-bot && pytest -q"], ["ok", "23 passed in 0.02s"],
+    ["cmd", "cd ../price-monitor && pytest -q"], ["ok", "15 passed in 0.19s"],
+    ["cmd", "cd ../crypto-alert-bot && pytest -q"], ["ok", "19 passed in 0.07s"],
+    ["dim", "итого: 101 passed, 0 failed"],
+  ];
+  const render = upTo => {
+    out.innerHTML = script.slice(0, upTo).map(([k, t]) => `<div class="${k}">${t}</div>`).join("") + (upTo < script.length ? '<span class="cursor"></span>' : "");
+  };
+  if (reduce) { render(script.length); return; }
+  render(0);
+  let played = false;
+  new IntersectionObserver(async ([e], obs) => {
+    if (!e.isIntersecting || played) return;
+    played = true; obs.disconnect();
+    for (let i = 0; i < script.length; i++) {
+      const [kind, text] = script[i];
+      if (kind === "cmd") {
+        for (let j = 1; j <= text.length; j++) {
+          out.innerHTML = script.slice(0, i).map(([k, t]) => `<div class="${k}">${t}</div>`).join("") + `<div class="cmd">${text.slice(0, j)}<span class="cursor"></span></div>`;
+          await new Promise(r => setTimeout(r, 18));
+        }
+      } else {
+        await new Promise(r => setTimeout(r, 260));
+      }
+      render(i + 1);
+    }
+  }, { threshold: 0.5 }).observe(out);
+})();
+
+/* ------------------------------------------------------------ chat demo */
+(() => {
+  const log = document.getElementById("log");
+  const box = document.getElementById("replies");
+  const now = () => new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  const intro = [
+    ["out", "Здравствуйте! Нужен бот, чтобы клиенты сами записывались на стрижку"],
+    ["in", 'Здравствуйте! Такой у нас есть: анкета, проверка занятого времени, заявка вам в Telegram и выгрузка в Excel. <a href="#leads-bot">Пример с кодом</a>. Под ваш салон — 2–3 дня, от $60.'],
+  ];
+  const topics = [
+    { q: "А магазин в Telegram?", a: 'Да: каталог, корзина, доставка или самовывоз, заказы приходят вам с кнопками статусов. <a href="#shop-bot">Пример магазина</a>, от $60.' },
+    { q: "Спамеры в группе замучили", a: 'Поставим бота-модератора: капча новичкам, мьют за флуд, ссылки от новых участников удаляются. <a href="#chat-guard-bot">Как это работает</a>, от $40.' },
+    { q: "Хочу следить за ценами конкурентов", a: 'Сделаем парсер: каждое утро отчёт в Telegram о том, что подешевело и подорожало, плюс таблица Excel. <a href="#price-monitor">Пример парсера</a>, от $25.' },
+    { q: "Нужны уведомления по крипте", a: 'Бот пришлёт уведомление, когда монета пересечёт уровень: <code>/alert btc &gt; 70000</code>. <a href="#crypto-alert-bot">Пример бота</a>, от $35.' },
+    { q: "Как оплачивать?", a: 'Переводом на карту или в USDT. Новым заказчикам — предоплата 50%, остальное после проверки. <a href="#prices">Все цены</a>.' },
+  ];
+  const bubble = (side, html) => {
+    const d = document.createElement("div");
+    d.className = `msg ${side}`; d.innerHTML = `${html}<time>${now()}</time>`;
+    log.appendChild(d); log.scrollTop = log.scrollHeight;
+  };
+  const answer = html => {
+    if (reduce) { bubble("in", html); return Promise.resolve(); }
+    const t = document.createElement("div");
+    t.className = "typing"; t.setAttribute("aria-label", "печатает"); t.innerHTML = "<i></i><i></i><i></i>";
+    log.appendChild(t); log.scrollTop = log.scrollHeight;
+    return new Promise(r => setTimeout(() => { t.remove(); bubble("in", html); r(); }, 850));
+  };
+  intro.forEach(([s, h]) => bubble(s, h));
+  topics.forEach(topic => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = topic.q;
+    b.addEventListener("click", async () => {
+      b.disabled = true; bubble("out", topic.q); await answer(topic.a); b.remove();
+      if (!box.querySelector("button")) {
+        const c = document.createElement("button");
+        c.type = "button"; c.textContent = "Обсудить свою задачу";
+        c.addEventListener("click", () => { location.href = CONTACT_URL; });
+        box.appendChild(c);
+      }
+    });
+    box.appendChild(b);
+  });
+})();
+</script>
+</body>
+</html>
